@@ -19,11 +19,11 @@ class BlackjackGUI:
         self.info_label = tk.Label(inner_root, text="Welcome to Blackjack!", font=("Helvetica", 18))
         self.info_label.pack()
 
-        self.player_hand_label = tk.Label(inner_root, text="", font=("Helvetica", 16))
-        self.player_hand_label.pack()
-
         self.dealer_hand_label = tk.Label(inner_root, text="", font=("Helvetica", 16))
         self.dealer_hand_label.pack()
+
+        self.player_hand_label = tk.Label(inner_root, text="", font=("Helvetica", 16))
+        self.player_hand_label.pack()
 
         self.feedback_frame = tk.Frame(inner_root)
         self.feedback_frame.pack()
@@ -37,8 +37,8 @@ class BlackjackGUI:
         self.hit_button = tk.Button(inner_root, text="[K] Hit", command=self.hit, font=("Helvetica", 14))
         self.hit_button.pack(side=tk.LEFT)
 
-        self.double_button = tk.Button(inner_root, text="[L] Split", command=self.split, font=("Helvetica", 14))
-        self.double_button.pack(side=tk.LEFT)
+        self.split_button = tk.Button(inner_root, text="[L] Split", command=self.split, font=("Helvetica", 14))
+        self.split_button.pack(side=tk.LEFT)
 
         self.end_button = tk.Button(inner_root, text="[E] End", command=self.end_game, font=("Helvetica", 14))
         self.end_button.pack(side=tk.RIGHT)
@@ -94,26 +94,39 @@ class BlackjackGUI:
         self.player_hand_label.config(text=f"Player's hand: {self.game.player_hand}")
         self.dealer_hand_label.config(text=f"Dealer's upcard: {self.game.dealer_hand}")
 
-        # Display card images (example for player's hand)
+        # Clear previous card images
         for widget in self.player_hand_label.winfo_children():
             widget.destroy()
 
+        for widget in self.dealer_hand_label.winfo_children():
+            widget.destroy()
+
+        # Display dealer's upcard
+        dealer_upcard = self.game.dealer_hand
+        dealer_card_name = self.get_card_name(dealer_upcard)
+        dealer_card_image = self.card_images.get(dealer_card_name)
+        if dealer_card_image:
+            dealer_card_label = tk.Label(self.dealer_hand_label, image=dealer_card_image)
+            dealer_card_label.image = dealer_card_image  # Keep a reference to the image
+            dealer_card_label.pack(side=tk.LEFT)
+
+        # Display player's hand
         for card in self.game.player_hand:
-            suits = ['hearts', 'diamonds', 'clubs', 'spades']
-            suit = random.choice(suits)
-            if card == 10:
-                tens = ['10', 'jack', 'queen', 'king']
-                card = random.choice(tens)
-            elif card == 11:
-                card = 'ace'
-            card_name = f"{card}_of_{suit}"
+            card_name = self.get_card_name(card)
             card_image = self.card_images.get(card_name)
-            print(f"Looking up card image for: {card_name}")  # Debugging print statement
             if card_image:
                 card_label = tk.Label(self.player_hand_label, image=card_image)
+                card_label.image = card_image  # Keep a reference to the image
                 card_label.pack(side=tk.LEFT)
-            else:
-                print(f"Error: No image found for {card_name}")
+
+    @staticmethod
+    def get_card_name(card):
+        suit = random.choice(['hearts', 'diamonds', 'clubs', 'spades'])
+        if card == 10:
+            card = random.choice(['10', 'jack', 'queen', 'king'])
+        elif card == 11:
+            card = 'ace'
+        return f"{card}_of_{suit}"
 
     def hit(self):
         self.perform_action('h')
@@ -125,7 +138,8 @@ class BlackjackGUI:
         self.perform_action('d')
 
     def split(self):
-        self.perform_action('y')
+        if self.game.player_hand[0] == self.game.player_hand[1]:
+            self.perform_action('y')
 
     def perform_action(self, action):
         feedback, result = self.game.get_feedback(action)
