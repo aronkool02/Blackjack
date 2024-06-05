@@ -24,14 +24,14 @@ class BlackjackGUI:
         self.feedback_frame = tk.Frame(inner_root)
         self.feedback_frame.pack()
 
-        self.hit_button = tk.Button(inner_root, text="[K] Hit", command=self.hit, font=("Helvetica", 14))
-        self.hit_button.pack(side=tk.LEFT)
-
         self.stand_button = tk.Button(inner_root, text="[S] Stand", command=self.stand, font=("Helvetica", 14))
         self.stand_button.pack(side=tk.LEFT)
 
         self.double_button = tk.Button(inner_root, text="[D] Double", command=self.double, font=("Helvetica", 14))
         self.double_button.pack(side=tk.LEFT)
+
+        self.hit_button = tk.Button(inner_root, text="[K] Hit", command=self.hit, font=("Helvetica", 14))
+        self.hit_button.pack(side=tk.LEFT)
 
         self.double_button = tk.Button(inner_root, text="[L] Split", command=self.split, font=("Helvetica", 14))
         self.double_button.pack(side=tk.LEFT)
