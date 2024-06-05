@@ -1,5 +1,7 @@
 import tkinter as tk
+from PIL import Image, ImageTk
 from blackjack import Blackjack
+import random
 
 
 class BlackjackGUI:
@@ -11,6 +13,8 @@ class BlackjackGUI:
         self.responses = []
         self.wrong_hands = []
         self.game_type = "deal"
+
+        self.card_images = {}  # Dictionary to store loaded card images
 
         self.info_label = tk.Label(inner_root, text="Welcome to Blackjack!", font=("Helvetica", 18))
         self.info_label.pack()
@@ -45,40 +49,37 @@ class BlackjackGUI:
         self.root.bind('l', lambda event: self.split())
         self.root.bind('e', lambda event: self.end_game())
 
+        self.load_card_images()
         self.ask_game_type()
+
+    def load_card_images(self):
+        suits = ['hearts', 'diamonds', 'clubs', 'spades']
+        values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'jack', 'queen', 'king', 'ace']
+        for suit in suits:
+            for value in values:
+                card_name = f"{value}_of_{suit}"
+                try:
+                    image = Image.open(f"cards/{card_name}.png")
+                    scaled_image = image.resize((int(image.width * 0.3), int(image.height * 0.3)),
+                                                Image.Resampling.LANCZOS)
+                    self.card_images[card_name] = ImageTk.PhotoImage(scaled_image)
+                except Exception as e:
+                    print(f"Error loading image for {card_name}: {e}")
 
     def ask_game_type(self):
         self.game_type_window = tk.Toplevel(self.root)
         self.game_type_window.title("Select Game Type")
 
-        tk.Label(self.game_type_window,
-                 text="Select the type of game:",
-                 font=("Helvetica", 16)
-                 ).pack()
+        tk.Label(self.game_type_window, text="Select the type of game:", font=("Helvetica", 16)).pack()
 
-        tk.Button(
-            self.game_type_window, text="Deal All",
-            command=lambda: self.set_game_type("deal_all"),
-            font=("Helvetica", 14)
-        ).pack()
-
-        tk.Button(
-            self.game_type_window, text="Deal Soft",
-            command=lambda: self.set_game_type("deal_soft"),
-            font=("Helvetica", 14)
-        ).pack()
-
-        tk.Button(
-            self.game_type_window, text="Deal Hard",
-            command=lambda: self.set_game_type("deal_hard"),
-            font=("Helvetica", 14)
-        ).pack()
-
-        tk.Button(
-            self.game_type_window, text="Deal Pairs",
-            command=lambda: self.set_game_type("deal_pairs"),
-            font=("Helvetica", 14)
-        ).pack()
+        tk.Button(self.game_type_window, text="Deal All",
+                  command=lambda: self.set_game_type("deal_all"), font=("Helvetica", 14)).pack()
+        tk.Button(self.game_type_window, text="Deal Soft",
+                  command=lambda: self.set_game_type("deal_soft"), font=("Helvetica", 14)).pack()
+        tk.Button(self.game_type_window, text="Deal Hard",
+                  command=lambda: self.set_game_type("deal_hard"), font=("Helvetica", 14)).pack()
+        tk.Button(self.game_type_window, text="Deal Pairs",
+                  command=lambda: self.set_game_type("deal_pairs"), font=("Helvetica", 14)).pack()
 
     def set_game_type(self, game_type):
         self.game_type = game_type
@@ -92,6 +93,27 @@ class BlackjackGUI:
     def update_display(self):
         self.player_hand_label.config(text=f"Player's hand: {self.game.player_hand}")
         self.dealer_hand_label.config(text=f"Dealer's upcard: {self.game.dealer_hand}")
+
+        # Display card images (example for player's hand)
+        for widget in self.player_hand_label.winfo_children():
+            widget.destroy()
+
+        for card in self.game.player_hand:
+            suits = ['hearts', 'diamonds', 'clubs', 'spades']
+            suit = random.choice(suits)
+            if card == 10:
+                tens = ['10', 'jack', 'queen', 'king']
+                card = random.choice(tens)
+            elif card == 11:
+                card = 'ace'
+            card_name = f"{card}_of_{suit}"
+            card_image = self.card_images.get(card_name)
+            print(f"Looking up card image for: {card_name}")  # Debugging print statement
+            if card_image:
+                card_label = tk.Label(self.player_hand_label, image=card_image)
+                card_label.pack(side=tk.LEFT)
+            else:
+                print(f"Error: No image found for {card_name}")
 
     def hit(self):
         self.perform_action('h')
