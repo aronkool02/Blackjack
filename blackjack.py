@@ -10,7 +10,8 @@ class Blackjack:
     def deal_hard(self):
         while True:
             self.player_hand = [random.choice(self.deck), random.choice(self.deck)]
-            if self.player_hand[0] != 11 and self.player_hand[1] != 11:
+            player_sum = self.player_hand[0] + self.player_hand[1]
+            if self.player_hand[0] != 11 and self.player_hand[1] != 11 and 7 < player_sum < 18:
                 break
         self.dealer_hand = random.choice(self.deck)
 
@@ -175,4 +176,17 @@ class Blackjack:
 
 if __name__ == "__main__":
     game = Blackjack()
-    game.play()
+    while True:
+        user_input = input("Choose which hands are dealt: [H]ard, [S]oft [P]airs or [A]ll: ")
+        if user_input.lower() in ['h', 's', 'p', 'a']:
+            mode = {
+                'h': 'hard',
+                's': 'soft',
+                'p': 'pairs',
+                'a': 'all'
+            }.get(user_input.lower())
+            print(f"Starting game. Dealing {mode}")
+            game.play(mode)
+            break
+        else:
+            pass
