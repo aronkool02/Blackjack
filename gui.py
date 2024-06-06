@@ -13,6 +13,7 @@ class BlackjackGUI:
         self.responses = []
         self.wrong_hands = []
         self.game_type = "deal"
+        self.stats_root = None
 
         self.card_images = {}  # Dictionary to store loaded card images
 
@@ -156,21 +157,27 @@ class BlackjackGUI:
         self.new_game()
 
     def end_game(self) -> None:
+        # Create a new root window for the stats window
+        stats_root = tk.Tk()
+        stats_root.title("Game Statistics")
+
         correct_count = sum(self.responses)
         total_count = len(self.responses)
         percentage_correct = (correct_count / total_count) * 100 if total_count > 0 else 0
 
-        stats_window = tk.Toplevel(self.root)
-        stats_window.title("Game Statistics")
+        tk.Label(stats_root, text=f"Correct answers: {correct_count} / {total_count}", font=("Helvetica", 16)).pack()
+        tk.Label(stats_root, text=f"Percentage correct: {percentage_correct:.2f}%", font=("Helvetica", 16)).pack()
 
-        tk.Label(stats_window, text=f"Correct answers: {correct_count} / {total_count}", font=("Helvetica", 16)).pack()
-        tk.Label(stats_window, text=f"Percentage correct: {percentage_correct:.2f}%", font=("Helvetica", 16)).pack()
-
-        tk.Label(stats_window, text="Wrong hands:", font=("Helvetica", 16)).pack()
+        tk.Label(stats_root, text="Wrong hands:", font=("Helvetica", 16)).pack()
         wrong_hands_text = "\n".join([f"Player: {ph}, Dealer: {dh}" for ph, dh in self.wrong_hands])
-        tk.Label(stats_window, text=wrong_hands_text, font=("Helvetica", 12)).pack()
+        tk.Label(stats_root, text=wrong_hands_text, font=("Helvetica", 12)).pack()
 
-        tk.Button(stats_window, text="Done", command=self.quit_program, font=("Helvetica", 14)).pack()
+        tk.Button(stats_root, text="[D] Done", command=self.quit_program, font=("Helvetica", 14)).pack()
+
+        # Destroy the main game window
+        self.root.destroy()
+        stats_root.bind('d', lambda event: self.quit_program())
+        stats_root.bind('<Return>', lambda event: self.quit_program())
 
     def quit_program(self) -> None:
         self.root.quit()
