@@ -9,6 +9,7 @@ class BlackjackGUI:
         self.game_type_window = None
         self.game = Blackjack()
         self.root = inner_root
+        self.root.withdraw()
         self.root.title("Blackjack Game")
         self.responses = []
         self.wrong_hands = []
@@ -85,6 +86,7 @@ class BlackjackGUI:
     def set_game_type(self, game_type) -> None:
         self.game_type = game_type
         self.game_type_window.destroy()
+        self.root.deiconify()
         self.new_game()
 
     def new_game(self) -> None:
