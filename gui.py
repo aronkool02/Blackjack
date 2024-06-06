@@ -5,7 +5,7 @@ import random
 
 
 class BlackjackGUI:
-    def __init__(self, inner_root):
+    def __init__(self, inner_root) -> None:
         self.game_type_window = None
         self.game = Blackjack()
         self.root = inner_root
@@ -52,7 +52,7 @@ class BlackjackGUI:
         self.load_card_images()
         self.ask_game_type()
 
-    def load_card_images(self):
+    def load_card_images(self) -> None:
         suits = ['hearts', 'diamonds', 'clubs', 'spades']
         values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'jack', 'queen', 'king', 'ace']
         for suit in suits:
@@ -66,7 +66,7 @@ class BlackjackGUI:
                 except Exception as e:
                     print(f"Error loading image for {card_name}: {e}")
 
-    def ask_game_type(self):
+    def ask_game_type(self) -> None:
         self.game_type_window = tk.Toplevel(self.root)
         self.game_type_window.title("Select Game Type")
 
@@ -81,16 +81,16 @@ class BlackjackGUI:
         tk.Button(self.game_type_window, text="Deal Pairs",
                   command=lambda: self.set_game_type("deal_pairs"), font=("Helvetica", 14)).pack()
 
-    def set_game_type(self, game_type):
+    def set_game_type(self, game_type) -> None:
         self.game_type = game_type
         self.game_type_window.destroy()
         self.new_game()
 
-    def new_game(self):
+    def new_game(self) -> None:
         getattr(self.game, self.game_type)()
         self.update_display()
 
-    def update_display(self):
+    def update_display(self) -> None:
         self.player_hand_label.config(text=f"Player's hand: {self.game.player_hand}")
         self.dealer_hand_label.config(text=f"Dealer's upcard: {self.game.dealer_hand}")
 
@@ -120,7 +120,7 @@ class BlackjackGUI:
                 card_label.pack(side=tk.LEFT)
 
     @staticmethod
-    def get_card_name(card):
+    def get_card_name(card) -> str:
         suit = random.choice(['hearts', 'diamonds', 'clubs', 'spades'])
         if card == 10:
             card = random.choice(['10', 'jack', 'queen', 'king'])
@@ -128,20 +128,20 @@ class BlackjackGUI:
             card = 'ace'
         return f"{card}_of_{suit}"
 
-    def hit(self):
+    def hit(self) -> None:
         self.perform_action('h')
 
-    def stand(self):
+    def stand(self) -> None:
         self.perform_action('s')
 
-    def double(self):
+    def double(self) -> None:
         self.perform_action('d')
 
-    def split(self):
+    def split(self) -> None:
         if self.game.player_hand[0] == self.game.player_hand[1]:
             self.perform_action('y')
 
-    def perform_action(self, action):
+    def perform_action(self, action) -> None:
         feedback, result = self.game.get_feedback(action)
         self.responses.append(result)
         if result == 0:
@@ -155,7 +155,7 @@ class BlackjackGUI:
 
         self.new_game()
 
-    def end_game(self):
+    def end_game(self) -> None:
         correct_count = sum(self.responses)
         total_count = len(self.responses)
         percentage_correct = (correct_count / total_count) * 100 if total_count > 0 else 0
@@ -172,7 +172,7 @@ class BlackjackGUI:
 
         tk.Button(stats_window, text="Done", command=self.quit_program, font=("Helvetica", 14)).pack()
 
-    def quit_program(self):
+    def quit_program(self) -> None:
         self.root.quit()
 
 

@@ -2,12 +2,12 @@ import random
 
 
 class Blackjack:
-    def __init__(self):
+    def __init__(self) -> None:
         self.deck = [2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 11]
         self.player_hand = []
         self.dealer_hand = 0
 
-    def deal_hard(self):
+    def deal_hard(self) -> None:
         while True:
             self.player_hand = [random.choice(self.deck), random.choice(self.deck)]
             player_sum = self.player_hand[0] + self.player_hand[1]
@@ -15,7 +15,7 @@ class Blackjack:
                 break
         self.dealer_hand = random.choice(self.deck)
 
-    def deal_soft(self):
+    def deal_soft(self) -> None:
         while True:
             self.player_hand = [random.choice(self.deck), random.choice(self.deck)]
             if (
@@ -25,12 +25,12 @@ class Blackjack:
                 break
         self.dealer_hand = random.choice(self.deck)
 
-    def deal_pairs(self):
+    def deal_pairs(self) -> None:
         self.player_hand = [random.choice(self.deck)]
         self.player_hand.append(self.player_hand[0])
         self.dealer_hand = random.choice(self.deck)
 
-    def deal_all(self):
+    def deal_all(self) -> None:
         while True:
             self.player_hand = [random.choice(self.deck), random.choice(self.deck)]
             player_sum = self.player_hand[0] + self.player_hand[1]
@@ -44,8 +44,8 @@ class Blackjack:
         self.dealer_hand = random.choice(self.deck)
 
     @staticmethod
-    def hand_value(hand):
-        hand_copy = hand.copy()  # Create a copy of the hand
+    def hand_value(hand) -> int:
+        hand_copy = hand.copy()
         value = sum(hand_copy)
         while value > 21 and 11 in hand_copy:
             hand_copy[hand_copy.index(11)] = 1
@@ -53,14 +53,14 @@ class Blackjack:
         return value
 
     @staticmethod
-    def is_soft_hand(hand):
+    def is_soft_hand(hand) -> bool:
         return 11 in hand and sum(hand) <= 21
 
     @staticmethod
-    def is_pairs(hand):
+    def is_pairs(hand) -> bool:
         return hand[0] == hand[1]
 
-    def basic_strategy(self, player_hand, dealer_upcard):
+    def basic_strategy(self, player_hand, dealer_upcard) -> str:
         hard_hands = {
             20: ['s'] * 10,
             19: ['s'] * 10,
@@ -132,7 +132,7 @@ class Blackjack:
         print("No specific strategy found, defaulting to 'ERROR'")
         return 'ERROR'
 
-    def get_feedback(self, action):
+    def get_feedback(self, action: str) -> tuple[str, int]:
         correct_action = self.basic_strategy(self.player_hand, self.dealer_hand)
         if action == correct_action:
             return "Correct action!", 1
@@ -146,7 +146,7 @@ class Blackjack:
 
             return f"Wrong action. The correct action was {action}.", 0
 
-    def play(self, deal_type='all'):
+    def play(self, deal_type='all') -> None:
         while True:
             if deal_type == 'hard':
                 self.deal_hard()
