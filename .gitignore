@@ -1,0 +1,18 @@
+# Default ignored files
+/shelf/
+/workspace.xml
+.idea/
+.DS_Store
+Shmam.icns
+__pycache__/
+setup.py
+.eggs/
+build/
+dist/
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.swp
