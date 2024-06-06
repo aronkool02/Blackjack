@@ -18,13 +18,13 @@ class BlackjackGUI:
 
         self.card_images = {}  # Dictionary to store loaded card images
 
-        self.info_label = tk.Label(inner_root, text="Welcome to Blackjack!", font=("Helvetica", 18))
+        self.info_label = tk.Label(inner_root, text="Welcome to Blackjack!", font=("Helvetica", 24))
         self.info_label.pack(pady=10, padx=10)
 
-        self.dealer_hand_label = tk.Label(inner_root, text="", font=("Helvetica", 16))
+        self.dealer_hand_label = tk.Label(inner_root, text="", font=("Helvetica", 20))
         self.dealer_hand_label.pack(pady=10, padx=10)
 
-        self.player_hand_label = tk.Label(inner_root, text="", font=("Helvetica", 16))
+        self.player_hand_label = tk.Label(inner_root, text="", font=("Helvetica", 20))
         self.player_hand_label.pack(pady=10, padx=10)
 
         self.feedback_frame = tk.Frame(inner_root)
@@ -71,11 +71,11 @@ class BlackjackGUI:
     def ask_game_type(self) -> None:
         self.game_type_window = tk.Toplevel(self.root)
         self.game_type_window.update_idletasks()  # Ensure the window has been drawn and its dimensions are available
-        current_height = self.game_type_window.winfo_height()  # Get current height
-        self.game_type_window.geometry(f"400x{current_height}")  # Make window wider
+        # current_height = self.game_type_window.winfo_height()  # Get current height
+        self.game_type_window.geometry(f"400x250")  # Make window wider
         self.game_type_window.title("Select Game Type")
 
-        tk.Label(self.game_type_window, text="Select the type of game:", font=("Helvetica", 16)).pack(pady=10, padx=10)
+        tk.Label(self.game_type_window, text="Select the type of game:", font=("Helvetica", 20)).pack(pady=10, padx=10)
 
         tk.Button(self.game_type_window, text="Deal All",
                   command=lambda: self.set_game_type("deal_all"), font=("Helvetica", 14)).pack(pady=10, padx=10)
@@ -156,7 +156,15 @@ class BlackjackGUI:
         color = "green" if result == 1 else "red"
         for widget in self.feedback_frame.winfo_children():
             widget.destroy()
-        feedback_label = tk.Label(self.feedback_frame, text=feedback, font=("Helvetica", 16), fg=color)
+        action_dict = {
+            'h': 'hit',
+            's': 'stood',
+            'd': 'doubled',
+            'y': 'split'
+        }.get(action, 'Unknown action')
+        feedback_label = tk.Label(self.feedback_frame, text=f"You {action_dict}!", font=("Helvetica", 20), fg=color)
+        feedback_label.pack()
+        feedback_label = tk.Label(self.feedback_frame, text=feedback, font=("Helvetica", 20), fg=color)
         feedback_label.pack()
 
         self.new_game()
@@ -170,14 +178,14 @@ class BlackjackGUI:
         total_count = len(self.responses)
         percentage_correct = (correct_count / total_count) * 100 if total_count > 0 else 0
 
-        (tk.Label(stats_root, text=f"Correct answers: {correct_count} / {total_count}", font=("Helvetica", 16))
+        (tk.Label(stats_root, text=f"Correct answers: {correct_count} / {total_count}", font=("Helvetica", 20))
             .pack(pady=10, padx=10))
-        (tk.Label(stats_root, text=f"Percentage correct: {percentage_correct:.2f}%", font=("Helvetica", 16))
+        (tk.Label(stats_root, text=f"Percentage correct: {percentage_correct:.2f}%", font=("Helvetica", 20))
             .pack(padx=10))
 
-        tk.Label(stats_root, text="Wrong hands:", font=("Helvetica", 16)).pack(pady=10, padx=10)
+        tk.Label(stats_root, text="Wrong hands:", font=("Helvetica", 20)).pack(pady=10, padx=10)
         wrong_hands_text = "\n".join([f"Player: {ph}, Dealer: {dh}" for ph, dh in self.wrong_hands])
-        tk.Label(stats_root, text=wrong_hands_text, font=("Helvetica", 12)).pack(padx=10)
+        tk.Label(stats_root, text=wrong_hands_text, font=("Helvetica", 16)).pack(padx=10)
 
         tk.Button(stats_root, text="[D] Done", command=self.quit_program, font=("Helvetica", 14)).pack(pady=10, padx=10)
 
