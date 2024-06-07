@@ -15,6 +15,7 @@ class BlackjackGUI:
         self.wrong_hands = []
         self.game_type = "deal"
         self.stats_root = None
+        self.restart = 0
 
         self.card_images = {}  # Dictionary to store loaded card images
 
@@ -43,7 +44,7 @@ class BlackjackGUI:
         self.split_button.pack(side=tk.LEFT, pady=10, padx=10)
 
         self.end_button = tk.Button(inner_root, text="[E] End", command=self.end_game, font=("Helvetica", 14))
-        self.end_button.pack(side=tk.RIGHT, pady=10, padx=10)
+        self.end_button.pack(side=tk.LEFT, pady=10, padx=10)
 
         self.root.bind('k', lambda event: self.hit())
         self.root.bind('s', lambda event: self.stand())
@@ -70,9 +71,6 @@ class BlackjackGUI:
 
     def ask_game_type(self) -> None:
         self.game_type_window = tk.Toplevel(self.root)
-        self.game_type_window.update_idletasks()  # Ensure the window has been drawn and its dimensions are available
-        # current_height = self.game_type_window.winfo_height()  # Get current height
-        self.game_type_window.geometry(f"400x250")  # Make window wider
         self.game_type_window.title("Select Game Type")
 
         tk.Label(self.game_type_window, text="Select the type of game:", font=("Helvetica", 20)).pack(pady=10, padx=10)
@@ -171,34 +169,48 @@ class BlackjackGUI:
 
     def end_game(self) -> None:
         # Create a new root window for the stats window
-        stats_root = tk.Tk()
-        stats_root.title("Game Statistics")
+        self.stats_root = tk.Tk()
+        self.stats_root.title("Game Statistics")
 
         correct_count = sum(self.responses)
         total_count = len(self.responses)
         percentage_correct = (correct_count / total_count) * 100 if total_count > 0 else 0
 
-        (tk.Label(stats_root, text=f"Correct answers: {correct_count} / {total_count}", font=("Helvetica", 20))
+        (tk.Label(self.stats_root, text=f"Correct answers: {correct_count} / {total_count}", font=("Helvetica", 20))
             .pack(pady=10, padx=10))
-        (tk.Label(stats_root, text=f"Percentage correct: {percentage_correct:.2f}%", font=("Helvetica", 20))
+        (tk.Label(self.stats_root, text=f"Percentage correct: {percentage_correct:.2f}%", font=("Helvetica", 20))
             .pack(padx=10))
 
-        tk.Label(stats_root, text="Wrong hands:", font=("Helvetica", 20)).pack(pady=10, padx=10)
+        tk.Label(self.stats_root, text="Wrong hands:", font=("Helvetica", 20)).pack(pady=10, padx=10)
         wrong_hands_text = "\n".join([f"Player: {ph}, Dealer: {dh}" for ph, dh in self.wrong_hands])
-        tk.Label(stats_root, text=wrong_hands_text, font=("Helvetica", 16)).pack(padx=10)
+        tk.Label(self.stats_root, text=wrong_hands_text, font=("Helvetica", 16)).pack(padx=10)
 
-        tk.Button(stats_root, text="[D] Done", command=self.quit_program, font=("Helvetica", 14)).pack(pady=10, padx=10)
+        (tk.Button(self.stats_root, text="[D] Done", command=self.quit_program, font=("Helvetica", 14))
+            .pack(pady=10, padx=10))
+        (tk.Button(self.stats_root, text="[ENTER] Restart game", command=self.restart_program, font=("Helvetica", 14))
+            .pack(pady=10, padx=10))
 
         # Destroy the main game window
         self.root.destroy()
-        stats_root.bind('d', lambda event: self.quit_program())
-        stats_root.bind('<Return>', lambda event: self.quit_program())
+        self.stats_root.bind('d', lambda event: self.quit_program())
+        self.stats_root.bind('<Return>', lambda event: self.restart_program())
 
     def quit_program(self) -> None:
+        self.stats_root.destroy()
         self.root.quit()
+
+    def restart_program(self) -> None:
+        self.restart = 1
+        self.quit_program()
 
 
 if __name__ == "__main__":
-    root = tk.Tk()
-    gui = BlackjackGUI(root)
-    root.mainloop()
+    while True:
+        root = tk.Tk()
+        gui = BlackjackGUI(root)
+        root.mainloop()
+
+        if gui.restart == 0:
+            break
+        else:
+            gui.restart = 0

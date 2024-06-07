@@ -144,7 +144,7 @@ class Blackjack:
                 'y': 'split'
             }.get(correct_action, 'Unknown action')
 
-            return f"Wrong action. The correct action was {action}.", 0
+            return f"The correct action was {action}.", 0
 
     def play(self, deal_type='all') -> None:
         while True:
