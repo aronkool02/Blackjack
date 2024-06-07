@@ -1,4 +1,5 @@
 import tkinter as tk
+import tkinter.font as tkfont
 from PIL import Image, ImageTk
 from blackjack import Blackjack
 import random
@@ -18,6 +19,7 @@ class BlackjackGUI:
         self.stats_root = None
         self.restart = 0
         self.font = "Helvetica"
+        self.button_font_size = 14
 
         self.card_images = {}  # Dictionary to store loaded card images
 
@@ -34,27 +36,27 @@ class BlackjackGUI:
         self.feedback_frame.pack(pady=10, padx=10)
 
         self.stand_button = tk.Button(inner_root, text="[S] Stand", command=self.stand, font=(
-            self.font, 14 if self.font == "Helvetica" else 12
+            self.font, self.button_font_size
         ))
         self.stand_button.pack(side=tk.LEFT, pady=10, padx=10)
 
         self.double_button = tk.Button(inner_root, text="[D] Double", command=self.double, font=(
-            self.font, 14 if self.font == "Helvetica" else 12
+            self.font, self.button_font_size
         ))
         self.double_button.pack(side=tk.LEFT, pady=10, padx=10)
 
         self.hit_button = tk.Button(inner_root, text="[K] Hit", command=self.hit, font=(
-            self.font, 14 if self.font == "Helvetica" else 12
+            self.font, self.button_font_size
         ))
         self.hit_button.pack(side=tk.LEFT, pady=10, padx=10)
 
         self.split_button = tk.Button(inner_root, text="[L] Split", command=self.split, font=(
-            self.font, 14 if self.font == "Helvetica" else 12
+            self.font, self.button_font_size
         ))
         self.split_button.pack(side=tk.LEFT, pady=10, padx=10)
 
         self.end_button = tk.Button(inner_root, text="[E] End", command=self.end_game, font=(
-            self.font, 14 if self.font == "Helvetica" else 12
+            self.font, self.button_font_size
         ))
         self.end_button.pack(side=tk.LEFT, pady=10, padx=10)
 
@@ -66,6 +68,19 @@ class BlackjackGUI:
 
         self.load_card_images()
         self.ask_game_type()
+
+    def update_fonts(self):
+        for widget in [self.info_label, self.dealer_hand_label, self.player_hand_label, self.stand_button,
+                       self.double_button, self.hit_button, self.split_button, self.end_button]:
+            current_font = tkfont.Font(font=widget.cget("font"))
+            font_size = current_font.cget("size")
+            widget.config(font=(self.font, font_size))
+
+        if self.game_type_window:
+            for widget in self.game_type_window.winfo_children():
+                current_font = tkfont.Font(font=widget.cget("font"))
+                font_size = current_font.cget("size")
+                widget.config(font=(self.font, font_size))
 
     def load_card_images(self) -> None:
         suits = ['hearts', 'diamonds', 'clubs', 'spades']
@@ -94,25 +109,26 @@ class BlackjackGUI:
 
         tk.Button(self.game_type_window, text="Deal [A] All",
                   command=lambda: self.set_game_type("deal_all"), font=(
-                    self.font, 14 if self.font == "Helvetica" else 12
+                    self.font, self.button_font_size
                     )).pack(pady=10, padx=10)
         tk.Button(self.game_type_window, text="Deal [S] Soft",
                   command=lambda: self.set_game_type("deal_soft"), font=(
-                    self.font, 14 if self.font == "Helvetica" else 12
+                    self.font, self.button_font_size
                     )).pack(pady=10, padx=10)
         tk.Button(self.game_type_window, text="Deal [H] Hard",
                   command=lambda: self.set_game_type("deal_hard"), font=(
-                    self.font, 14 if self.font == "Helvetica" else 12
+                    self.font, self.button_font_size
                     )).pack(pady=10, padx=10)
         tk.Button(self.game_type_window, text="Deal [P] Pairs",
                   command=lambda: self.set_game_type("deal_pairs"), font=(
-                    self.font, 14 if self.font == "Helvetica" else 12
+                    self.font, self.button_font_size
                     )).pack(pady=10, padx=10)
 
         self.game_type_window.bind('a', lambda event: self.set_game_type("deal_all"))
         self.game_type_window.bind('s', lambda event: self.set_game_type("deal_soft"))
         self.game_type_window.bind('h', lambda event: self.set_game_type("deal_hard"))
         self.game_type_window.bind('p', lambda event: self.set_game_type("deal_pairs"))
+        self.game_type_window.bind('c', lambda event: (setattr(self, "font", "Comic Sans MS"), self.update_fonts()))
 
     def set_game_type(self, game_type) -> None:
         self.game_type = game_type
@@ -234,10 +250,10 @@ class BlackjackGUI:
             tk.Label(self.stats_root, text=wrong_hands_text, font=(self.font, 16)).pack(padx=10)
 
         (tk.Button(self.stats_root, text="[E] End", command=self.quit_program,
-                   font=(self.font, 14 if self.font == "Helvetica" else 12))
+                   font=(self.font, self.button_font_size))
          .pack(pady=10, padx=10))
         (tk.Button(self.stats_root, text="[R] Restart game", command=self.restart_program,
-                   font=(self.font, 14 if self.font == "Helvetica" else 12))
+                   font=(self.font, self.button_font_size))
          .pack(pady=10, padx=10))
 
         # Force focus on the stats window
