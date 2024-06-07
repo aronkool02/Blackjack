@@ -73,6 +73,10 @@ class BlackjackGUI:
         self.game_type_window = tk.Toplevel(self.root)
         self.game_type_window.title("Select Game Type")
 
+        # Force focus on the stats window
+        self.game_type_window.lift()
+        self.game_type_window.focus_force()
+
         tk.Label(self.game_type_window, text="Select the type of game:", font=("Helvetica", 20)).pack(pady=10, padx=10)
 
         tk.Button(self.game_type_window, text="Deal All",
