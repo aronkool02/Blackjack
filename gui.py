@@ -151,6 +151,15 @@ class BlackjackGUI:
         for widget in self.dealer_hand_label.winfo_children():
             widget.destroy()
 
+        # Display rtp in Comic Sans MS mode
+        if self.font == "Comic Sans MS":
+            rtp_value = self.game.get_rtp()
+            color = "red" if rtp_value < 0 else "green"
+            rtp_label = tk.Label(self.dealer_hand_label, text="RTP", font=(self.font, 20))
+            rtp_label.pack(side=tk.TOP)
+            rtp_label = tk.Label(self.dealer_hand_label, text=f"{rtp_value * 10:.3f}", font=(self.font, 20), fg=color)
+            rtp_label.pack(side=tk.TOP)
+
         # Display dealer's upcard
         dealer_upcard = self.game.dealer_hand
         dealer_card_name = self.get_card_name(dealer_upcard)
@@ -158,7 +167,7 @@ class BlackjackGUI:
         if dealer_card_image:
             dealer_card_label = tk.Label(self.dealer_hand_label, image=dealer_card_image)
             dealer_card_label.image = dealer_card_image  # Keep a reference to the image
-            dealer_card_label.pack(side=tk.LEFT, padx=10)
+            dealer_card_label.pack(side=tk.LEFT, padx=10, pady=10)
 
         # Display player's hand
         for card in self.game.player_hand:
@@ -167,7 +176,7 @@ class BlackjackGUI:
             if card_image:
                 card_label = tk.Label(self.player_hand_label, image=card_image)
                 card_label.image = card_image  # Keep a reference to the image
-                card_label.pack(side=tk.LEFT, padx=10)
+                card_label.pack(side=tk.LEFT, padx=20)
 
     @staticmethod
     def get_card_name(card) -> str:

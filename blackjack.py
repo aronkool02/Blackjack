@@ -1,5 +1,7 @@
 import random
 
+import rtp
+
 
 class Blackjack:
     def __init__(self) -> None:
@@ -52,52 +54,6 @@ class Blackjack:
             value = sum(hand_copy)
         return value
 
-    def deal_card(self) -> int:
-        return random.choice(self.deck)
-
-    def simulate_hand(self, player_hand, dealer_upcard, action) -> bool:
-        dealer_hand = [dealer_upcard, self.deal_card()]
-        player_hand = player_hand.copy()
-
-        if action == 'h':
-            player_hand.append(self.deal_card())
-        elif action == 'd':
-            player_hand.append(self.deal_card())
-            if self.hand_value(player_hand) > 21:
-                return False
-        elif action == 'y':
-            # Assuming split only on pairs and just simulating one of the split hands
-            player_hand = [player_hand[0], self.deal_card()]
-
-        # Simulate dealer's hand
-        while self.hand_value(dealer_hand) < 17:
-            dealer_hand.append(self.deal_card())
-
-        player_value = self.hand_value(player_hand)
-        dealer_value = self.hand_value(dealer_hand)
-
-        if player_value > 21:
-            return False
-        elif dealer_value > 21 or player_value > dealer_value:
-            return True
-        else:
-            return False
-
-    def monte_carlo_simulation(self, player_hand, dealer_upcard, action, simulations=100000) -> float:
-        wins = 0
-        for _ in range(simulations):
-            if self.simulate_hand(player_hand, dealer_upcard, action):
-                wins += 1
-        return wins / simulations
-
-    def simulate_all_actions(self, player_hand, dealer_upcard):
-        actions = ['h', 's']
-        results = {}
-        for action in actions:
-            win_prob = self.monte_carlo_simulation(player_hand, dealer_upcard, action)
-            results[action] = win_prob
-        return results
-
     @staticmethod
     def is_soft_hand(hand) -> bool:
         return 11 in hand and sum(hand) <= 21
@@ -149,30 +105,15 @@ class Blackjack:
         dealer_index = dealer_upcard - 2
 
         if self.is_pairs(player_hand):
-            print(f"Checking pairs hand strategy matrix for player value: {player_value} (pairs)")
             pair_value = (player_hand[0], player_hand[1])
             if pair_value in pairs:
-                print(
-                    f"Pairs hand {player_hand} against dealer {dealer_upcard}: "
-                    f"{pairs[pair_value][dealer_index]}"
-                )
                 return pairs[pair_value][dealer_index]
         elif self.is_soft_hand(player_hand):
-            print(f"Checking soft hand strategy matrix for player value: {player_value} (soft total)")
             soft_total = player_value - 11
             if (11, soft_total) in soft_hands:
-                print(
-                    f"Soft hand {player_hand} against dealer {dealer_upcard}: "
-                    f"{soft_hands[(11, soft_total)][dealer_index]}"
-                )
                 return soft_hands[(11, soft_total)][dealer_index]
         else:
-            print(f"Checking hard hand strategy matrix for player value: {player_value}")
             if player_value in hard_hands:
-                print(
-                    f"Hard hand {player_hand} against dealer {dealer_upcard}: "
-                    f"{hard_hands[player_value][dealer_index]}"
-                )
                 return hard_hands[player_value][dealer_index]
 
         print("No specific strategy found, defaulting to 'ERROR'")
@@ -192,6 +133,19 @@ class Blackjack:
 
             return f"The correct action was {action}.", 0
 
+    def get_rtp(self) -> float:
+        if not self.is_pairs(self.player_hand) and not self.is_soft_hand(self.player_hand):
+            key = self.hand_value(self.player_hand)
+        else:
+            if self.player_hand[1] == 11:
+                temp_list = self.player_hand
+                temp_list.reverse()
+                key = tuple(temp_list)
+            else:
+                key = tuple(self.player_hand)
+        if key:
+            return rtp.rtp_table[key][self.dealer_hand - 2]
+
     def play(self, deal_type='all') -> None:
         while True:
             if deal_type == 'hard':
@@ -205,6 +159,7 @@ class Blackjack:
 
             print(f"Player's hand: {self.player_hand}")
             print(f"Dealer's upcard: {self.dealer_hand}")
+            print(f"Expected rtp: {self.get_rtp()}")
 
             while True:
                 action = input("Enter action (h: hit, s: stand, d: double, y: split, e: end): ").strip().lower()
@@ -213,11 +168,11 @@ class Blackjack:
                     return
                 elif action in ['h', 's', 'd', 'y']:
                     feedback = self.get_feedback(action)
-                    print(feedback)
+                    print(feedback[0])
                     break
                 else:
                     print("Invalid action. Please enter h, s, d, or e.")
-            print("\nStarting a new game...\n")
+            print("\nStarting a new game...")
 
 
 if __name__ == "__main__":
