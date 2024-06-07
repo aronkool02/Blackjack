@@ -2,6 +2,7 @@ import tkinter as tk
 from PIL import Image, ImageTk
 from blackjack import Blackjack
 import random
+from resource_path import resource_path
 
 
 class BlackjackGUI:
@@ -58,11 +59,12 @@ class BlackjackGUI:
     def load_card_images(self) -> None:
         suits = ['hearts', 'diamonds', 'clubs', 'spades']
         values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'jack', 'queen', 'king', 'ace']
+        absolute_path = resource_path("cards")
         for suit in suits:
             for value in values:
                 card_name = f"{value}_of_{suit}"
                 try:
-                    image = Image.open(f"cards/{card_name}.png")
+                    image = Image.open(f"{absolute_path}/{card_name}.png")
                     scaled_image = image.resize((int(image.width * 0.3), int(image.height * 0.3)),
                                                 Image.Resampling.LANCZOS)
                     self.card_images[card_name] = ImageTk.PhotoImage(scaled_image)
