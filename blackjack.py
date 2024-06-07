@@ -52,6 +52,52 @@ class Blackjack:
             value = sum(hand_copy)
         return value
 
+    def deal_card(self) -> int:
+        return random.choice(self.deck)
+
+    def simulate_hand(self, player_hand, dealer_upcard, action) -> bool:
+        dealer_hand = [dealer_upcard, self.deal_card()]
+        player_hand = player_hand.copy()
+
+        if action == 'h':
+            player_hand.append(self.deal_card())
+        elif action == 'd':
+            player_hand.append(self.deal_card())
+            if self.hand_value(player_hand) > 21:
+                return False
+        elif action == 'y':
+            # Assuming split only on pairs and just simulating one of the split hands
+            player_hand = [player_hand[0], self.deal_card()]
+
+        # Simulate dealer's hand
+        while self.hand_value(dealer_hand) < 17:
+            dealer_hand.append(self.deal_card())
+
+        player_value = self.hand_value(player_hand)
+        dealer_value = self.hand_value(dealer_hand)
+
+        if player_value > 21:
+            return False
+        elif dealer_value > 21 or player_value > dealer_value:
+            return True
+        else:
+            return False
+
+    def monte_carlo_simulation(self, player_hand, dealer_upcard, action, simulations=100000) -> float:
+        wins = 0
+        for _ in range(simulations):
+            if self.simulate_hand(player_hand, dealer_upcard, action):
+                wins += 1
+        return wins / simulations
+
+    def simulate_all_actions(self, player_hand, dealer_upcard):
+        actions = ['h', 's']
+        results = {}
+        for action in actions:
+            win_prob = self.monte_carlo_simulation(player_hand, dealer_upcard, action)
+            results[action] = win_prob
+        return results
+
     @staticmethod
     def is_soft_hand(hand) -> bool:
         return 11 in hand and sum(hand) <= 21
