@@ -190,6 +190,10 @@ class BlackjackGUI:
         (tk.Button(self.stats_root, text="[ENTER] Restart game", command=self.restart_program, font=("Helvetica", 14))
             .pack(pady=10, padx=10))
 
+        # Force focus on the stats window
+        self.stats_root.lift()
+        self.stats_root.focus_force()
+
         # Destroy the main game window
         self.root.destroy()
         self.stats_root.bind('d', lambda event: self.quit_program())
