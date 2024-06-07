@@ -75,20 +75,25 @@ class BlackjackGUI:
         self.game_type_window = tk.Toplevel(self.root)
         self.game_type_window.title("Select Game Type")
 
-        # Force focus on the stats window
+        # Force focus on the window
         self.game_type_window.lift()
         self.game_type_window.focus_force()
 
         tk.Label(self.game_type_window, text="Select the type of game:", font=("Helvetica", 20)).pack(pady=10, padx=10)
 
-        tk.Button(self.game_type_window, text="Deal All",
+        tk.Button(self.game_type_window, text="Deal [A] All",
                   command=lambda: self.set_game_type("deal_all"), font=("Helvetica", 14)).pack(pady=10, padx=10)
-        tk.Button(self.game_type_window, text="Deal Soft",
+        tk.Button(self.game_type_window, text="Deal [S] Soft",
                   command=lambda: self.set_game_type("deal_soft"), font=("Helvetica", 14)).pack(pady=10, padx=10)
-        tk.Button(self.game_type_window, text="Deal Hard",
+        tk.Button(self.game_type_window, text="Deal [H] Hard",
                   command=lambda: self.set_game_type("deal_hard"), font=("Helvetica", 14)).pack(pady=10, padx=10)
-        tk.Button(self.game_type_window, text="Deal Pairs",
+        tk.Button(self.game_type_window, text="Deal [P] Pairs",
                   command=lambda: self.set_game_type("deal_pairs"), font=("Helvetica", 14)).pack(pady=10, padx=10)
+
+        self.game_type_window.bind('a', lambda event: self.set_game_type("deal_all"))
+        self.game_type_window.bind('s', lambda event: self.set_game_type("deal_soft"))
+        self.game_type_window.bind('h', lambda event: self.set_game_type("deal_hard"))
+        self.game_type_window.bind('p', lambda event: self.set_game_type("deal_pairs"))
 
     def set_game_type(self, game_type) -> None:
         self.game_type = game_type
@@ -150,28 +155,45 @@ class BlackjackGUI:
     def split(self) -> None:
         if self.game.player_hand[0] == self.game.player_hand[1]:
             self.perform_action('y')
+        else:
+            self.perform_action('n')
 
     def perform_action(self, action) -> None:
         feedback, result = self.game.get_feedback(action)
-        self.responses.append(result)
-        if result == 0:
-            self.wrong_hands.append((self.game.player_hand.copy(), self.game.dealer_hand))
+        if action == 'n':
+            print("Split is not a valid action")
+            for widget in self.feedback_frame.winfo_children():
+                widget.destroy()
+            feedback_label = tk.Label(self.feedback_frame, text=f"You noob!", font=("Helvetica", 20), fg="red")
+            feedback_label.pack()
+            feedback_label = tk.Label(
+                self.feedback_frame,
+                text=(f"You can't split {'ace' if self.game.player_hand[0] == 11 else self.game.player_hand[0]} "
+                      f"and {'ace' if self.game.player_hand[1] == 11 else self.game.player_hand[1]}"),
+                font=("Helvetica", 20),
+                fg="red"
+            )
+            feedback_label.pack()
+        else:
+            self.responses.append(result)
+            if result == 0:
+                self.wrong_hands.append((self.game.player_hand.copy(), self.game.dealer_hand))
 
-        color = "green" if result == 1 else "red"
-        for widget in self.feedback_frame.winfo_children():
-            widget.destroy()
-        action_dict = {
-            'h': 'hit',
-            's': 'stood',
-            'd': 'doubled',
-            'y': 'split'
-        }.get(action, 'Unknown action')
-        feedback_label = tk.Label(self.feedback_frame, text=f"You {action_dict}!", font=("Helvetica", 20), fg=color)
-        feedback_label.pack()
-        feedback_label = tk.Label(self.feedback_frame, text=feedback, font=("Helvetica", 20), fg=color)
-        feedback_label.pack()
+            color = "green" if result == 1 else "red"
+            for widget in self.feedback_frame.winfo_children():
+                widget.destroy()
+            action_dict = {
+                'h': 'hit',
+                's': 'stood',
+                'd': 'doubled',
+                'y': 'split'
+            }.get(action, 'Unknown action')
+            feedback_label = tk.Label(self.feedback_frame, text=f"You {action_dict}!", font=("Helvetica", 20), fg=color)
+            feedback_label.pack()
+            feedback_label = tk.Label(self.feedback_frame, text=feedback, font=("Helvetica", 20), fg=color)
+            feedback_label.pack()
 
-        self.new_game()
+            self.new_game()
 
     def end_game(self) -> None:
         # Create a new root window for the stats window
@@ -183,18 +205,19 @@ class BlackjackGUI:
         percentage_correct = (correct_count / total_count) * 100 if total_count > 0 else 0
 
         (tk.Label(self.stats_root, text=f"Correct answers: {correct_count} / {total_count}", font=("Helvetica", 20))
-            .pack(pady=10, padx=10))
+         .pack(pady=10, padx=10))
         (tk.Label(self.stats_root, text=f"Percentage correct: {percentage_correct:.2f}%", font=("Helvetica", 20))
-            .pack(padx=10))
+         .pack(padx=10))
 
-        tk.Label(self.stats_root, text="Wrong hands:", font=("Helvetica", 20)).pack(pady=10, padx=10)
-        wrong_hands_text = "\n".join([f"Player: {ph}, Dealer: {dh}" for ph, dh in self.wrong_hands])
-        tk.Label(self.stats_root, text=wrong_hands_text, font=("Helvetica", 16)).pack(padx=10)
+        if self.wrong_hands:
+            tk.Label(self.stats_root, text="Wrong hands:", font=("Helvetica", 20)).pack(pady=10, padx=10)
+            wrong_hands_text = "\n".join([f"Player: {ph}, Dealer: {dh}" for ph, dh in self.wrong_hands])
+            tk.Label(self.stats_root, text=wrong_hands_text, font=("Helvetica", 16)).pack(padx=10)
 
-        (tk.Button(self.stats_root, text="[D] Done", command=self.quit_program, font=("Helvetica", 14))
-            .pack(pady=10, padx=10))
-        (tk.Button(self.stats_root, text="[ENTER] Restart game", command=self.restart_program, font=("Helvetica", 14))
-            .pack(pady=10, padx=10))
+        (tk.Button(self.stats_root, text="[E] End", command=self.quit_program, font=("Helvetica", 14))
+         .pack(pady=10, padx=10))
+        (tk.Button(self.stats_root, text="[R] Restart game", command=self.restart_program, font=("Helvetica", 14))
+         .pack(pady=10, padx=10))
 
         # Force focus on the stats window
         self.stats_root.lift()
@@ -202,8 +225,8 @@ class BlackjackGUI:
 
         # Destroy the main game window
         self.root.destroy()
-        self.stats_root.bind('d', lambda event: self.quit_program())
-        self.stats_root.bind('<Return>', lambda event: self.restart_program())
+        self.stats_root.bind('e', lambda event: self.quit_program())
+        self.stats_root.bind('r', lambda event: self.restart_program())
 
     def quit_program(self) -> None:
         self.stats_root.destroy()

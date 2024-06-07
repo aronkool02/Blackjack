@@ -16,7 +16,7 @@ Use pyinstaller version 6.7. Navigate to project directory and run:
 pyinstaller --onefile --windowed --add-data "cards;cards" gui.py
 ```
 
-## Macos compile guide
+## MacOS compile guide
 Generate setup.py using py2applet. You need to modify setup.py to recursively include every .png for the cards (figure it out LOL). Then run:
 ```bash
 python setup.py py2app
