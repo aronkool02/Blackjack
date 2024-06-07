@@ -1,6 +1,6 @@
 import random
 
-import rtp
+import roi
 
 
 class Blackjack:
@@ -133,7 +133,7 @@ class Blackjack:
 
             return f"The correct action was {action}.", 0
 
-    def get_rtp(self) -> float:
+    def get_roi(self) -> float:
         if not self.is_pairs(self.player_hand) and not self.is_soft_hand(self.player_hand):
             key = self.hand_value(self.player_hand)
         else:
@@ -144,7 +144,7 @@ class Blackjack:
             else:
                 key = tuple(self.player_hand)
         if key:
-            return rtp.rtp_table[key][self.dealer_hand - 2]
+            return roi.roi_table[key][self.dealer_hand - 2]
 
     def play(self, deal_type='all') -> None:
         while True:
@@ -159,7 +159,7 @@ class Blackjack:
 
             print(f"Player's hand: {self.player_hand}")
             print(f"Dealer's upcard: {self.dealer_hand}")
-            print(f"Expected rtp: {self.get_rtp()}")
+            print(f"Expected ROI: {self.get_roi()}")
 
             while True:
                 action = input("Enter action (h: hit, s: stand, d: double, y: split, e: end): ").strip().lower()

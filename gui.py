@@ -151,14 +151,14 @@ class BlackjackGUI:
         for widget in self.dealer_hand_label.winfo_children():
             widget.destroy()
 
-        # Display rtp in Comic Sans MS mode
+        # Display ROI in Comic Sans MS mode
         if self.font == "Comic Sans MS":
-            rtp_value = self.game.get_rtp()
-            color = "red" if rtp_value < 0 else "green"
-            rtp_label = tk.Label(self.dealer_hand_label, text="RTP", font=(self.font, 20))
-            rtp_label.pack(side=tk.TOP)
-            rtp_label = tk.Label(self.dealer_hand_label, text=f"{rtp_value * 10:.3f}", font=(self.font, 20), fg=color)
-            rtp_label.pack(side=tk.TOP)
+            roi_value = self.game.get_roi()
+            color = "red" if roi_value < 0 else "green"
+            roi_label = tk.Label(self.dealer_hand_label, text="ROI (bet size: 10)", font=(self.font, 20))
+            roi_label.pack(side=tk.TOP)
+            roi_label = tk.Label(self.dealer_hand_label, text=f"{roi_value * 10:.3f}", font=(self.font, 20), fg=color)
+            roi_label.pack(side=tk.TOP)
 
         # Display dealer's upcard
         dealer_upcard = self.game.dealer_hand
