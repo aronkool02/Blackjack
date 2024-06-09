@@ -167,7 +167,7 @@ class BlackjackGUI:
         if dealer_card_image:
             dealer_card_label = tk.Label(self.dealer_hand_label, image=dealer_card_image)
             dealer_card_label.image = dealer_card_image  # Keep a reference to the image
-            dealer_card_label.pack(side=tk.LEFT, padx=10, pady=10)
+            dealer_card_label.pack(side=tk.TOP, padx=10, pady=10)
 
         # Display player's hand
         for card in self.game.player_hand:
