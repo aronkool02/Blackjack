@@ -23,6 +23,8 @@ class BlackjackGUI:
 
         self.card_images = {}  # Dictionary to store loaded card images
 
+        self.center_window(root)
+
         self.info_label = tk.Label(inner_root, text="Welcome to Blackjack!", font=(self.font, 24))
         self.info_label.pack(pady=10, padx=10)
 
@@ -69,6 +71,24 @@ class BlackjackGUI:
         self.load_card_images()
         self.ask_game_type()
 
+    @staticmethod
+    def center_window(window):
+        window.update_idletasks()
+
+        # Get the window width and height
+        width = window.winfo_width()
+        height = window.winfo_height()
+
+        # Get the screen width and height
+        screen_width = window.winfo_screenwidth()
+        screen_height = window.winfo_screenheight()
+
+        # Calculate position x and y coordinates
+        x = (screen_width - width) // 3
+        y = (screen_height - height) // 12
+
+        window.geometry(f'+{x}+{y}')
+
     def update_fonts(self):
         for widget in [self.info_label, self.dealer_hand_label, self.player_hand_label, self.stand_button,
                        self.double_button, self.hit_button, self.split_button, self.end_button]:
@@ -99,6 +119,7 @@ class BlackjackGUI:
 
     def ask_game_type(self) -> None:
         self.game_type_window = tk.Toplevel(self.root)
+        self.center_window(self.game_type_window)
         self.game_type_window.title("Select Game Type")
 
         # Force focus on the window
@@ -242,6 +263,7 @@ class BlackjackGUI:
     def end_game(self) -> None:
         # Create a new root window for the stats window
         self.stats_root = tk.Tk()
+        self.center_window(self.stats_root)
         self.stats_root.title("Game Statistics")
 
         correct_count = sum(self.responses)
@@ -255,7 +277,7 @@ class BlackjackGUI:
 
         if self.wrong_hands:
             tk.Label(self.stats_root, text="Wrong hands:", font=(self.font, 20)).pack(pady=10, padx=10)
-            wrong_hands_text = "\n".join([f"Player: {ph}, Dealer: {dh}" for ph, dh in self.wrong_hands])
+            wrong_hands_text = "\n".join([f"Player: {ph[0]}, {ph[1]} vs Dealer: {dh}" for ph, dh in self.wrong_hands])
             tk.Label(self.stats_root, text=wrong_hands_text, font=(self.font, 16)).pack(padx=10)
 
         (tk.Button(self.stats_root, text="[E] End", command=self.quit_program,

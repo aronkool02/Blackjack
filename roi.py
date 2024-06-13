@@ -1,10 +1,3 @@
-# Define the possible hands
-hard_hands = list(range(8, 18))
-soft_hands = list((11, card2) for card2 in range(2, 10))
-pairs = list((card, card) for card in range(2, 12))
-dealer_upcard = list(range(2, 12))
-
-
 roi_table = {
     5: [-0.1282, -0.0953, -0.0615, -0.024, -0.0012, -0.1194, -0.1881, -0.2666, -0.3134, -0.2786],
     6: [-0.1408, -0.1073, -0.0729, -0.0349, -0.013, -0.1519, -0.2172, -0.2926, -0.3377, -0.3041],
