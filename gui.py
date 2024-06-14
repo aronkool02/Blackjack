@@ -72,7 +72,7 @@ class BlackjackGUI:
         self.ask_game_type()
 
     @staticmethod
-    def center_window(window):
+    def center_window(window) -> None:
         window.update_idletasks()
 
         # Get the window width and height
@@ -89,7 +89,7 @@ class BlackjackGUI:
 
         window.geometry(f'+{x}+{y}')
 
-    def update_fonts(self):
+    def update_fonts(self) -> None:
         for widget in [self.info_label, self.dealer_hand_label, self.player_hand_label, self.stand_button,
                        self.double_button, self.hit_button, self.split_button, self.end_button]:
             current_font = tkfont.Font(font=widget.cget("font"))
