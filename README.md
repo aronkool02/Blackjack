@@ -21,3 +21,9 @@ Generate setup.py using py2applet. You need to modify setup.py to recursively in
 ```bash
 python setup.py py2app
 ```
+
+## Installation
+
+To install the required packages, run the following command:
+```sh
+pip install -r requirements.txt
